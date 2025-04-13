@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Catch it!</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="intro-screen">
+    <div class="intro-content">
+      <h1>Catch It!</h1>
+      <div class="intro-square"></div>
+      <p>Click the squares as fast as you can!</p>
+      <button id="start-btn">Start Game</button>
+      <p class="record">Best Score: <span id="start-best-score">0</span></p>
+    </div>
+  </div>
+
+  <div id="game-screen" style="display: none;">
+    <h1>Catch it!</h1>
+    <p id="timer">Time: 30</p>
+    <div id="game-container">
+      <div id="square"></div>
+    </div>
+    <p id="score">Score: 0</p>
+    <p id="best-score">Best Score: <span id="best-score-value">0</span></p>
+    <p id="misses">Misses: 0 / 3</p>
+    <button id="restart-btn" style="display: none;">Play Again</button>
+    <button id="reset-record">Reset Record</button>
+    <div id="message-right" class="motivate right">Focus!</div>
+    <div id="message-left" class="motivate left">Come on!</div>
+  </div>
+
+  <audio id="pop-sound" src="sound.mp3"></audio>
+  <audio id="gameover-sound" src="gameover.mp3"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
