@@ -15,7 +15,6 @@ const startBtn = document.getElementById("start-btn");
 const startBestScore = document.getElementById("start-best-score");
 const resetRecordBtn = document.getElementById("reset-record");
 
-// Game variables
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 let score = 0;
 let timeLeft = 30;
@@ -27,7 +26,6 @@ let canClick = true;
 let squareSize = 50;
 let isShrinking = true;
 
-// Initialize game
 bestScoreValue.textContent = bestScore;
 startBestScore.textContent = bestScore;
 
@@ -47,7 +45,7 @@ function moveSquare() {
 }
 
 function changeSquareSize() {
-  squareSize = isShrinking 
+  squareSize = isShrinking
     ? 30 + Math.floor(Math.random() * 11)
     : 50 + Math.floor(Math.random() * 21);
 
@@ -79,34 +77,70 @@ square.addEventListener("click", (event) => {
   moveSquare();
 });
 
+const rightMessages = ["Stay sharp!", "You got this!", "Don’t blink!", "Focus!"];
+const leftMessages = ["Try again!", "Keep going!", "Missed it!", "React faster!"];
+const colors = ["#ff4444", "#ffaa00", "#00ddff", "#ff66cc"];
+
+function showMotivation(side) {
+  const msg = side === "right" ? msgRight : msgLeft;
+  const messageList = side === "right" ? rightMessages : leftMessages;
+
+  msg.textContent = messageList[Math.floor(Math.random() * messageList.length)];
+  msg.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+  const gameRect = gameContainer.getBoundingClientRect();
+  const margin = 20;
+  const verticalRange = window.innerHeight - 100;
+  const top = Math.max(margin, Math.random() * verticalRange);
+  msg.style.top = `${top}px`;
+
+  const sideOffset = side === "right"
+    ? gameRect.right + margin
+    : gameRect.left - msg.offsetWidth - margin;
+
+  msg.style.left = side === "right" ? `${sideOffset}px` : "";
+  msg.style.right = side === "left" ? `${window.innerWidth - sideOffset}px` : "";
+
+  msg.classList.remove("show");
+  void msg.offsetWidth;
+  msg.classList.add("show");
+
+  setTimeout(() => msg.classList.remove("show"), 1000);
+}
+
 gameContainer.addEventListener("click", () => {
-    if (!gameStarted) return;
-  
-    misses++;
-    missesText.textContent = `Misses: ${misses} / 3`;
-  
-    gameContainer.classList.remove("shake");
-    void gameContainer.offsetWidth; // форсируем перезапуск анимации
-    gameContainer.classList.add("shake");
-  
-    gameContainer.classList.add("crack");
-    setTimeout(() => gameContainer.classList.remove("crack"), 500);
-  
-    if (misses === 1) {
-      msgRight.style.opacity = 1;
-      setTimeout(() => msgRight.style.opacity = 0, 1000);
-    } else if (misses === 2) {
-      msgLeft.style.opacity = 1;
-      setTimeout(() => msgLeft.style.opacity = 0, 1000);
-    }
-  
-    if (misses >= 3) {
-      endGame(true);
-      return;
-    }
-  });
+  if (!gameStarted) return;
+
+  misses++;
+  missesText.textContent = `Misses: ${misses} / 3`;
+
+  gameContainer.classList.remove("shake");
+  void gameContainer.offsetWidth;
+  gameContainer.classList.add("shake");
+  gameContainer.classList.add("crack");
+  setTimeout(() => gameContainer.classList.remove("crack"), 500);
+
+  if (misses === 1) {
+    showMotivation("right");
+  } else if (misses === 2) {
+    showMotivation("left");
+  }
+
+  if (misses >= 3) {
+    endGame(true);
+    return;
+  }
+});
 
 function startTimer() {
+  setInterval(() => {
+    let intensity = Math.min(misses, 3); // 0–3
+    square.style.animationDuration = `${0.4 - intensity * 0.05}s`;
+    square.classList.remove("shake");
+    void square.offsetWidth;
+    square.classList.add("shake");
+    setTimeout(() => square.classList.remove("shake"), 500);
+  }, 5000);
   sizeInterval = setInterval(changeSquareSize, 5000);
 
   timerInterval = setInterval(() => {
@@ -127,27 +161,33 @@ function endGame(tooManyMisses) {
   square.style.display = "none";
   gameStarted = false;
 
+  const overlay = document.createElement("div");
+  overlay.id = "gameover-overlay";
+  overlay.className = "show";
+  overlay.innerHTML = `
+    <div style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">Game Over</div>
+    <div style="font-size: 20px; color: #ffcc00;">Score: ${score}</div>
+    ${score > bestScore ? '<div class="new-record">🎉 New Record! 🎉</div>' : ''}
+  `;
+
   if (score > bestScore) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
     bestScoreValue.textContent = bestScore;
     startBestScore.textContent = bestScore;
-    timerText.textContent = tooManyMisses 
-      ? "Game Over — New Record!" 
-      : "Time's up — New Record!";
-  } else {
-    timerText.textContent = tooManyMisses 
-      ? "Game Over — Too many misses!" 
-      : "Time's up!";
   }
 
-  scoreText.textContent = `Score: ${score} — Game Over!`;
+  gameContainer.appendChild(overlay);
+  scoreText.textContent = `Score: ${score}`;
   restartBtn.style.display = "inline-block";
 }
 
 function resetGame() {
   clearInterval(timerInterval);
   clearInterval(sizeInterval);
+
+  const existingOverlay = document.getElementById("gameover-overlay");
+  if (existingOverlay) existingOverlay.remove();
 
   score = 0;
   timeLeft = 30;
