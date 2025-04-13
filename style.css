@@ -1,0 +1,322 @@
+
+body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    background-color: #222;
+    color: white;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  /* Стили для вступительного экрана */
+  #intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: all 0.8s ease;
+  }
+  
+  .intro-content {
+    animation: fadeIn 1s ease;
+    max-width: 90%;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  #intro-screen h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    color: #ffcc00;
+    text-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+  }
+  
+  .intro-square {
+    width: 80px;
+    height: 80px;
+    background-color: #ff4444;
+    margin: 0 auto 30px;
+    border-radius: 15px;
+    animation: pulse 2s infinite, float 4s ease-in-out infinite;
+    box-shadow: 0 0 25px rgba(255, 68, 68, 0.6);
+    cursor: pointer;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0); }
+  }
+  
+  #intro-screen p {
+    font-size: 1.2rem;
+    margin: 20px 0;
+    color: #aaa;
+  }
+  
+  .record {
+    font-size: 1.3rem;
+    color: #ffcc00;
+    margin-top: 30px;
+  }
+  
+  #start-btn {
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    background: linear-gradient(to right, #00b09b, #96c93d);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+  }
+  
+  #start-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Стили для игрового экрана */
+  #game-screen {
+    padding: 8px;
+    animation: fadeInGame 0.8s ease;
+  }
+  #game-screen h1 {
+    color: #ffcc00;
+    text-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+  }
+  
+  @keyframes fadeInGame {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  #game-container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+    border: 2px solid white;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  #square {
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    position: absolute;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  #timer {
+    padding: 0px ;
+    font-size: 20px;
+    margin-bottom: 10px;
+    color : #4fd2de;
+  }
+  
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  
+  .pop {
+    animation: pop 0.2s ease-out;
+  }
+  
+  #restart-btn {
+    padding: 5px 20px;
+    font-size: 15px;
+    background: linear-gradient(to right, #00b09b, #96c93d);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  #restart-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  }
+  
+  .motivate {
+    position: absolute;
+    font-size: 32px;
+    font-weight: bold;
+    color: #ff4444;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 100;
+  }
+  
+  .motivate {
+    position: absolute;
+    font-size: 28px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 100;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+    100% { transform: translateX(10px); }
+  }
+  
+  .shake {
+    animation: shake 0.3s ease-in-out;
+  }
+  
+  @keyframes crack {
+    0% { background-color: #333; box-shadow: none; }
+    100% { background-color: #222; box-shadow: inset 0 0 5px rgba(255, 0, 0, 0.5); }
+  }
+  
+  .crack {
+    animation: crack 0.5s ease-out forwards;
+  }
+  
+  #best-score {
+    font-size: 24px;
+    margin-top: 5px;
+    color: #ffcc00;
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+  }
+  
+  #score {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #00ff00;
+  }
+  
+  #reset-record {
+    padding: 8px 12px;
+    font-size: 14px;
+    background: linear-gradient(to right, #4b6cb7, #182848);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    margin: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  #reset-record:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  
+  @keyframes celebrate {
+    0% { transform: scale(1); color: #ffcc00; }
+    50% { transform: scale(1.2); color: #ff9900; }
+    100% { transform: scale(1); color: #ffcc00; }
+  }
+  
+  .new-record {
+    animation: celebrate 0.5s ease 3;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 500px) {
+    #game-container {
+      width: 300px;
+      height: 300px;
+    }
+    
+    #square {
+      width: 40px;
+      height: 40px;
+    }
+    
+    #intro-screen h1 {
+      font-size: 2.5rem;
+    }
+    
+    .intro-square {
+      width: 60px;
+      height: 60px;
+    }
+  }
+  @keyframes sizeChange {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+  
+  .size-change {
+    animation: sizeChange 0.5s ease;
+  }
+  @media (max-width: 500px) {
+    body {
+      font-size: 16px;
+    }
+  
+    #start-btn,
+    #restart-btn {
+      font-size: 1rem;
+      padding: 10px 20px;
+    }
+  }
+  @keyframes punchIn {
+    0% {
+      transform: scale(0.8) translateY(20px);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2) translateY(-5px);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .motivate.show {
+    animation: punchIn 0.6s ease;
+    opacity: 1 !important;
+  }
+  #misses {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #e74444;
+  }
+  #misses.show {
+    animation: punchIn 0.6s ease;
+    opacity: 1 !important;
+  }
+  
+  
+  
