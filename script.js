@@ -5,7 +5,7 @@ const restartBtn = document.getElementById("restart-btn");
 const popSound = document.getElementById("pop-sound");
 const gameoverSound = document.getElementById("gameover-sound");
 const missSound = document.getElementById("miss-sound");
-const winSound = document.getElementById("win-sound"); // Добавлен звук победы
+const winSound = document.getElementById("win-sound");
 const livesContainer = document.getElementById("lives-container");
 const heartIcons = livesContainer.querySelectorAll(".heart-icon");
 const msgRight = document.getElementById("message-right");
@@ -31,6 +31,11 @@ let isShrinking = true;
 
 bestScoreValue.textContent = bestScore;
 startBestScore.textContent = bestScore;
+
+// Функция для проверки мобильного устройства
+function isMobileDevice() {
+  return window.innerWidth <= 768; // Стандартная граница для мобильных устройств
+}
 
 function moveSquare() {
   const gameWidth = gameContainer.clientWidth - squareSize;
@@ -85,6 +90,11 @@ const leftMessages = ["Try again!", "Keep going!", "Missed it!", "React faster!"
 const colors = ["#ff4444", "#ffaa00", "#00ddff", "#ff66cc"];
 
 function showMotivation(side) {
+  // Если это мобильное устройство, не показываем мотивационные сообщения
+  if (isMobileDevice()) {
+    return;
+  }
+  
   const msg = side === "right" ? msgRight : msgLeft;
   const messageList = side === "right" ? rightMessages : leftMessages;
 
@@ -263,6 +273,13 @@ resetRecordBtn.addEventListener("click", () => {
   bestScore = 0;
   bestScoreValue.textContent = "0";
   startBestScore.textContent = "0";
+});
+window.addEventListener('resize', () => {
+  
+  if (isMobileDevice()) {
+    msgRight.classList.remove("show");
+    msgLeft.classList.remove("show");
+  }
 });
 
 moveSquare();
