@@ -4,7 +4,8 @@ const timerText = document.getElementById("timer");
 const restartBtn = document.getElementById("restart-btn");
 const popSound = document.getElementById("pop-sound");
 const gameoverSound = document.getElementById("gameover-sound");
-const missSound = document.getElementById("miss-sound"); // Добавлен звук промаха
+const missSound = document.getElementById("miss-sound");
+const winSound = document.getElementById("win-sound"); // Добавлен звук победы
 const livesContainer = document.getElementById("lives-container");
 const heartIcons = livesContainer.querySelectorAll(".heart-icon");
 const msgRight = document.getElementById("message-right");
@@ -175,7 +176,14 @@ function startTimer() {
 function endGame(tooManyMisses) {
   clearInterval(timerInterval);
   clearInterval(sizeInterval);
-  gameoverSound.play();
+  
+  // Проверяем, установлен ли новый рекорд и проигрываем соответствующий звук
+  if (score > bestScore) {
+    winSound.play(); // Воспроизводим звук победы при новом рекорде
+  } else {
+    gameoverSound.play(); // Иначе стандартный звук окончания игры
+  }
+  
   square.style.display = "none";
   gameStarted = false;
 
