@@ -4,7 +4,9 @@ const timerText = document.getElementById("timer");
 const restartBtn = document.getElementById("restart-btn");
 const popSound = document.getElementById("pop-sound");
 const gameoverSound = document.getElementById("gameover-sound");
-const missesText = document.getElementById("misses");
+const missSound = document.getElementById("miss-sound"); // Добавлен звук промаха
+const livesContainer = document.getElementById("lives-container");
+const heartIcons = livesContainer.querySelectorAll(".heart-icon");
 const msgRight = document.getElementById("message-right");
 const msgLeft = document.getElementById("message-left");
 const gameContainer = document.getElementById("game-container");
@@ -14,7 +16,6 @@ const gameScreen = document.getElementById("game-screen");
 const startBtn = document.getElementById("start-btn");
 const startBestScore = document.getElementById("start-best-score");
 const resetRecordBtn = document.getElementById("reset-record");
-const missSound = document.getElementById("miss-sound");
 
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 let score = 0;
@@ -78,7 +79,7 @@ square.addEventListener("click", (event) => {
   moveSquare();
 });
 
-const rightMessages = ["Stay sharp!", "You got this!", "Don’t blink!", "Focus!"];
+const rightMessages = ["Stay sharp!", "You got this!", "Don't blink!", "Focus!"];
 const leftMessages = ["Try again!", "Keep going!", "Missed it!", "React faster!"];
 const colors = ["#ff4444", "#ffaa00", "#00ddff", "#ff66cc"];
 
@@ -113,9 +114,23 @@ gameContainer.addEventListener("click", () => {
   if (!gameStarted) return;
 
   misses++;
-  missSound.currentTime = 0;
-  missSound.play();
-  missesText.textContent = `Misses: ${misses} / 3`;
+  
+  // Воспроизводим звук промаха
+  if (missSound) {
+    missSound.currentTime = 0;
+    missSound.play();
+  }
+  
+  // Обновляем отображение сердечек
+  if (misses <= heartIcons.length) {
+    const heartToLose = heartIcons[misses - 1];
+    heartToLose.classList.add("heart-animation");
+    
+    setTimeout(() => {
+      heartToLose.classList.remove("heart-animation");
+      heartToLose.classList.add("heart-lost");
+    }, 500);
+  }
 
   gameContainer.classList.remove("shake");
   void gameContainer.offsetWidth;
@@ -200,7 +215,13 @@ function resetGame() {
 
   scoreText.textContent = "Score: 0";
   timerText.textContent = "Time: 30";
-  missesText.textContent = "Misses: 0 / 3";
+  
+  // Восстановление сердечек
+  heartIcons.forEach(heart => {
+    heart.classList.remove("heart-lost");
+    heart.classList.remove("heart-animation");
+  });
+  
   restartBtn.style.display = "none";
   square.style.removeProperty("display");
   square.style.width = "50px";
