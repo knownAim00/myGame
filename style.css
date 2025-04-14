@@ -1,322 +1,260 @@
+const square = document.getElementById("square");
+const scoreText = document.getElementById("score");
+const timerText = document.getElementById("timer");
+const restartBtn = document.getElementById("restart-btn");
+const popSound = document.getElementById("pop-sound");
+const gameoverSound = document.getElementById("gameover-sound");
+const missSound = document.getElementById("miss-sound"); // Добавлен звук промаха
+const livesContainer = document.getElementById("lives-container");
+const heartIcons = livesContainer.querySelectorAll(".heart-icon");
+const msgRight = document.getElementById("message-right");
+const msgLeft = document.getElementById("message-left");
+const gameContainer = document.getElementById("game-container");
+const bestScoreValue = document.getElementById("best-score-value");
+const introScreen = document.getElementById("intro-screen");
+const gameScreen = document.getElementById("game-screen");
+const startBtn = document.getElementById("start-btn");
+const startBestScore = document.getElementById("start-best-score");
+const resetRecordBtn = document.getElementById("reset-record");
 
-body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    background-color: #222;
-    color: white;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
+let score = 0;
+let timeLeft = 30;
+let misses = 0;
+let timerInterval;
+let sizeInterval;
+let gameStarted = false;
+let canClick = true;
+let squareSize = 50;
+let isShrinking = true;
+
+bestScoreValue.textContent = bestScore;
+startBestScore.textContent = bestScore;
+
+function moveSquare() {
+  const gameWidth = gameContainer.clientWidth - squareSize;
+  const gameHeight = gameContainer.clientHeight - squareSize;
+  const x = Math.random() * gameWidth;
+  const y = Math.random() * gameHeight;
+
+  square.style.width = squareSize + "px";
+  square.style.height = squareSize + "px";
+  square.style.left = x + "px";
+  square.style.top = y + "px";
+
+  const hue = (score * 10) % 360;
+  square.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+}
+
+function changeSquareSize() {
+  squareSize = isShrinking
+    ? 30 + Math.floor(Math.random() * 11)
+    : 50 + Math.floor(Math.random() * 21);
+
+  isShrinking = !isShrinking;
+  square.classList.add("size-change");
+  setTimeout(() => {
+    moveSquare();
+    square.classList.remove("size-change");
+  }, 250);
+}
+
+function playPopEffect() {
+  popSound.currentTime = 0;
+  popSound.play();
+  square.classList.add("pop");
+  setTimeout(() => square.classList.remove("pop"), 200);
+}
+
+square.addEventListener("click", (event) => {
+  if (!gameStarted || !canClick) return;
+
+  canClick = false;
+  setTimeout(() => canClick = true, 200);
+
+  event.stopPropagation();
+  score++;
+  scoreText.textContent = "Score: " + score;
+  playPopEffect();
+  moveSquare();
+});
+
+const rightMessages = ["Stay sharp!", "You got this!", "Don't blink!", "Focus!"];
+const leftMessages = ["Try again!", "Keep going!", "Missed it!", "React faster!"];
+const colors = ["#ff4444", "#ffaa00", "#00ddff", "#ff66cc"];
+
+function showMotivation(side) {
+  const msg = side === "right" ? msgRight : msgLeft;
+  const messageList = side === "right" ? rightMessages : leftMessages;
+
+  msg.textContent = messageList[Math.floor(Math.random() * messageList.length)];
+  msg.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+  const gameRect = gameContainer.getBoundingClientRect();
+  const margin = 20;
+  const verticalRange = window.innerHeight - 100;
+  const top = Math.max(margin, Math.random() * verticalRange);
+  msg.style.top = `${top}px`;
+
+  const sideOffset = side === "right"
+    ? gameRect.right + margin
+    : gameRect.left - msg.offsetWidth - margin;
+
+  msg.style.left = side === "right" ? `${sideOffset}px` : "";
+  msg.style.right = side === "left" ? `${window.innerWidth - sideOffset}px` : "";
+
+  msg.classList.remove("show");
+  void msg.offsetWidth;
+  msg.classList.add("show");
+
+  setTimeout(() => msg.classList.remove("show"), 1000);
+}
+
+gameContainer.addEventListener("click", () => {
+  if (!gameStarted) return;
+
+  misses++;
+  
+  // Воспроизводим звук промаха
+  if (missSound) {
+    missSound.currentTime = 0;
+    missSound.play();
   }
   
-  /* Стили для вступительного экрана */
-  #intro-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    transition: all 0.8s ease;
-  }
-  
-  .intro-content {
-    animation: fadeIn 1s ease;
-    max-width: 90%;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  #intro-screen h1 {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-    color: #ffcc00;
-    text-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
-  }
-  
-  .intro-square {
-    width: 80px;
-    height: 80px;
-    background-color: #ff4444;
-    margin: 0 auto 30px;
-    border-radius: 15px;
-    animation: pulse 2s infinite, float 4s ease-in-out infinite;
-    box-shadow: 0 0 25px rgba(255, 68, 68, 0.6);
-    cursor: pointer;
-  }
-  
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
-  
-  @keyframes float {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-    100% { transform: translateY(0); }
-  }
-  
-  #intro-screen p {
-    font-size: 1.2rem;
-    margin: 20px 0;
-    color: #aaa;
-  }
-  
-  .record {
-    font-size: 1.3rem;
-    color: #ffcc00;
-    margin-top: 30px;
-  }
-  
-  #start-btn {
-    padding: 12px 30px;
-    font-size: 1.2rem;
-    background: linear-gradient(to right, #00b09b, #96c93d);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    margin-top: 20px;
-  }
-  
-  #start-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Стили для игрового экрана */
-  #game-screen {
-    padding: 8px;
-    animation: fadeInGame 0.8s ease;
-  }
-  #game-screen h1 {
-    color: #ffcc00;
-    text-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
-  }
-  
-  @keyframes fadeInGame {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  #game-container {
-    position: relative;
-    width: 400px;
-    height: 400px;
-    margin: 20px auto;
-    border: 2px solid white;
-    background-color: #333;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  
-  #square {
-    width: 50px;
-    height: 50px;
-    background-color: red;
-    position: absolute;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
-  
-  #timer {
-    padding: 0px ;
-    font-size: 20px;
-    margin-bottom: 10px;
-    color : #4fd2de;
-  }
-  
-  @keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-  }
-  
-  .pop {
-    animation: pop 0.2s ease-out;
-  }
-  
-  #restart-btn {
-    padding: 5px 20px;
-    font-size: 15px;
-    background: linear-gradient(to right, #00b09b, #96c93d);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    margin: 10px;
-    transition: all 0.3s ease;
-  }
-  
-  #restart-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-  }
-  
-  .motivate {
-    position: absolute;
-    font-size: 32px;
-    font-weight: bold;
-    color: #ff4444;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    z-index: 100;
-  }
-  
-  .motivate {
-    position: absolute;
-    font-size: 28px;
-    font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    z-index: 100;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  
-  @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    50% { transform: translateX(10px); }
-    75% { transform: translateX(-10px); }
-    100% { transform: translateX(10px); }
-  }
-  
-  .shake {
-    animation: shake 0.3s ease-in-out;
-  }
-  
-  @keyframes crack {
-    0% { background-color: #333; box-shadow: none; }
-    100% { background-color: #222; box-shadow: inset 0 0 5px rgba(255, 0, 0, 0.5); }
-  }
-  
-  .crack {
-    animation: crack 0.5s ease-out forwards;
-  }
-  
-  #best-score {
-    font-size: 24px;
-    margin-top: 5px;
-    color: #ffcc00;
-    text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
-  }
-  
-  #score {
-    font-size: 18px;
-    margin-top: 10px;
-    color: #00ff00;
-  }
-  
-  #reset-record {
-    padding: 8px 12px;
-    font-size: 14px;
-    background: linear-gradient(to right, #4b6cb7, #182848);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    cursor: pointer;
-    margin: 5px;
-    transition: all 0.3s ease;
-  }
-  
-  #reset-record:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  }
-  
-  @keyframes celebrate {
-    0% { transform: scale(1); color: #ffcc00; }
-    50% { transform: scale(1.2); color: #ff9900; }
-    100% { transform: scale(1); color: #ffcc00; }
-  }
-  
-  .new-record {
-    animation: celebrate 0.5s ease 3;
-  }
-  
-  /* Адаптивность */
-  @media (max-width: 500px) {
-    #game-container {
-      width: 300px;
-      height: 300px;
-    }
+  // Обновляем отображение сердечек
+  if (misses <= heartIcons.length) {
+    const heartToLose = heartIcons[misses - 1];
+    heartToLose.classList.add("heart-animation");
     
-    #square {
-      width: 40px;
-      height: 40px;
-    }
-    
-    #intro-screen h1 {
-      font-size: 2.5rem;
-    }
-    
-    .intro-square {
-      width: 60px;
-      height: 60px;
-    }
+    setTimeout(() => {
+      heartToLose.classList.remove("heart-animation");
+      heartToLose.classList.add("heart-lost");
+    }, 500);
   }
-  @keyframes sizeChange {
-    0% { transform: scale(1); }
-    50% { transform: scale(0.9); }
-    100% { transform: scale(1); }
+
+  gameContainer.classList.remove("shake");
+  void gameContainer.offsetWidth;
+  gameContainer.classList.add("shake");
+  gameContainer.classList.add("crack");
+  setTimeout(() => gameContainer.classList.remove("crack"), 500);
+
+  if (misses === 1) {
+    showMotivation("right");
+  } else if (misses === 2) {
+    showMotivation("left");
   }
+
+  if (misses >= 3) {
+    endGame(true);
+    return;
+  }
+});
+
+function startTimer() {
+  setInterval(() => {
+    let intensity = Math.min(misses, 3); // 0–3
+    square.style.animationDuration = `${0.4 - intensity * 0.05}s`;
+    square.classList.remove("shake");
+    void square.offsetWidth;
+    square.classList.add("shake");
+    setTimeout(() => square.classList.remove("shake"), 500);
+  }, 5000);
+  sizeInterval = setInterval(changeSquareSize, 5000);
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timerText.textContent = "Time: " + timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      endGame(false);
+    }
+  }, 1000);
+}
+
+function endGame(tooManyMisses) {
+  clearInterval(timerInterval);
+  clearInterval(sizeInterval);
+  gameoverSound.play();
+  square.style.display = "none";
+  gameStarted = false;
+
+  const overlay = document.createElement("div");
+  overlay.id = "gameover-overlay";
+  overlay.className = "show";
+  overlay.innerHTML = `
+    <div style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">Game Over</div>
+    <div style="font-size: 20px; color: #ffcc00;">Score: ${score}</div>
+    ${score > bestScore ? '<div class="new-record">🎉 New Record! 🎉</div>' : ''}
+  `;
+
+  if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem("bestScore", bestScore);
+    bestScoreValue.textContent = bestScore;
+    startBestScore.textContent = bestScore;
+  }
+
+  gameContainer.appendChild(overlay);
+  scoreText.textContent = `Score: ${score}`;
+  restartBtn.style.display = "inline-block";
+}
+
+function resetGame() {
+  clearInterval(timerInterval);
+  clearInterval(sizeInterval);
+
+  const existingOverlay = document.getElementById("gameover-overlay");
+  if (existingOverlay) existingOverlay.remove();
+
+  score = 0;
+  timeLeft = 30;
+  misses = 0;
+  squareSize = 50;
+  isShrinking = true;
+
+  scoreText.textContent = "Score: 0";
+  timerText.textContent = "Time: 30";
   
-  .size-change {
-    animation: sizeChange 0.5s ease;
-  }
-  @media (max-width: 500px) {
-    body {
-      font-size: 16px;
-    }
+  // Восстановление сердечек
+  heartIcons.forEach(heart => {
+    heart.classList.remove("heart-lost");
+    heart.classList.remove("heart-animation");
+  });
   
-    #start-btn,
-    #restart-btn {
-      font-size: 1rem;
-      padding: 10px 20px;
-    }
-  }
-  @keyframes punchIn {
-    0% {
-      transform: scale(0.8) translateY(20px);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1.2) translateY(-5px);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-  }
-  
-  .motivate.show {
-    animation: punchIn 0.6s ease;
-    opacity: 1 !important;
-  }
-  #misses {
-    font-size: 18px;
-    margin-top: 10px;
-    color: #e74444;
-  }
-  #misses.show {
-    animation: punchIn 0.6s ease;
-    opacity: 1 !important;
-  }
-  
-  
-  
+  restartBtn.style.display = "none";
+  square.style.removeProperty("display");
+  square.style.width = "50px";
+  square.style.height = "50px";
+  msgRight.style.opacity = 0;
+  msgLeft.style.opacity = 0;
+  gameContainer.style.backgroundColor = "#333";
+
+  moveSquare();
+}
+
+startBtn.addEventListener("click", () => {
+  introScreen.style.opacity = 0;
+  setTimeout(() => {
+    introScreen.style.display = "none";
+    gameScreen.style.display = "block";
+    resetGame();
+    gameStarted = true;
+    startTimer();
+  }, 800);
+});
+
+restartBtn.addEventListener("click", () => {
+  resetGame();
+  gameStarted = true;
+  startTimer();
+});
+
+resetRecordBtn.addEventListener("click", () => {
+  localStorage.removeItem("bestScore");
+  bestScore = 0;
+  bestScoreValue.textContent = "0";
+  startBestScore.textContent = "0";
+});
+
+moveSquare();
