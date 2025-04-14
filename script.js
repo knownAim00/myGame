@@ -14,6 +14,7 @@ const gameScreen = document.getElementById("game-screen");
 const startBtn = document.getElementById("start-btn");
 const startBestScore = document.getElementById("start-best-score");
 const resetRecordBtn = document.getElementById("reset-record");
+const missSound = document.getElementById("miss-sound");
 
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 let score = 0;
@@ -112,6 +113,8 @@ gameContainer.addEventListener("click", () => {
   if (!gameStarted) return;
 
   misses++;
+  missSound.currentTime = 0;
+  missSound.play();
   missesText.textContent = `Misses: ${misses} / 3`;
 
   gameContainer.classList.remove("shake");
