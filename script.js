@@ -18,6 +18,7 @@ const startBtn = document.getElementById("start-btn");
 const startBestScore = document.getElementById("start-best-score");
 const resetRecordBtn = document.getElementById("reset-record");
 
+
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 let score = 0;
 let timeLeft = 30;
@@ -49,7 +50,8 @@ function moveSquare() {
   square.style.top = y + "px";
 
   const hue = (score * 10) % 360;
-  square.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+  square.style.background = `linear-gradient(135deg, hsl(${hue}, 100%, 50%), hsl(${(hue + 60) % 360}, 100%, 50%))`;
+  square.style.boxShadow = `0 0 15px hsl(${hue}, 100%, 60%)`;
 }
 
 function changeSquareSize() {
