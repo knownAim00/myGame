@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Catch it!</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="style.css" />
-  <link rel = "website icon" type = "png"
-   href = "logo.png" />
+  <link rel="website icon" type="png" href="logo.png" />
 </head>
 <body>
   <div id="intro-screen">
@@ -22,16 +21,20 @@
   <div id="game-screen" style="display: none;">
     <h1>Catch it!</h1>
     <p id="timer">Time: 30</p>
-    <div id="game-container">
-      <div id="square"></div>
+    
+    <div id="game-wrapper">
+      <div id="game-container">
+        <div id="square"></div>
+      </div>
+      <div id="lives-container">
+        <span class="heart-icon">❤️</span>
+        <span class="heart-icon">❤️</span>
+        <span class="heart-icon">❤️</span>
+      </div>
     </div>
+
     <p id="score">Score: 0</p>
     <p id="best-score">Best Score: <span id="best-score-value">0</span></p>
-    <p id="lives-container">
-      <span class="heart-icon">❤️</span>
-      <span class="heart-icon">❤️</span>
-      <span class="heart-icon">❤️</span>
-    </p>
     <button id="restart-btn" style="display: none;">Play Again</button>
     <button id="reset-record">Reset Record</button>
     <div id="message-right" class="motivate right">Focus!</div>
