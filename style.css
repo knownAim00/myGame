@@ -1,4 +1,3 @@
-
 body {
   font-family: 'Arial', sans-serif;
   text-align: center;
@@ -16,82 +15,177 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: radial-gradient(circle at center, #2a2a5a, #0f1028);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   transition: all 0.8s ease;
+  overflow: hidden;
+}
+
+/* Добавляем анимированные частицы на фон */
+#intro-screen::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 50px 50px, 30px 30px;
+  background-position: 0 0, 25px 25px;
+  animation: particle-drift 20s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes particle-drift {
+  0% { background-position: 0 0, 25px 25px; }
+  100% { background-position: 50px 50px, 75px 75px; }
 }
 
 .intro-content {
-  animation: fadeIn 1s ease;
+  animation: fadeIn 1.2s ease;
   max-width: 90%;
+  background: rgba(16, 16, 48, 0.6);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(100, 100, 255, 0.2);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 #intro-screen h1 {
-  font-size: 3.5rem;
-  margin-bottom: 20px;
+  font-size: 4rem;
+  margin-bottom: 25px;
   color: #ffcc00;
-  text-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+  text-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
+  font-weight: 800;
+  letter-spacing: 2px;
 }
 
 .intro-square {
   width: 80px;
   height: 80px;
-  background-color: #ff4444;
+  background: linear-gradient(135deg, #ff4444, #ff8844);
   margin: 0 auto 30px;
   border-radius: 15px;
-  animation: pulse 2s infinite, float 4s ease-in-out infinite;
-  box-shadow: 0 0 25px rgba(255, 68, 68, 0.6);
-  cursor: pointer;
+  animation: pulse 0.5s infinite, float 4s ease-in-out infinite;
+  box-shadow: 0 0 25px rgba(255, 68, 68, 0.8);
+  position: relative;
+  z-index: 5;
+ 
 }
 
 @keyframes pulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  50% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
 
 @keyframes float {
   0% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+  50% { transform: translateY(-20px); }
   100% { transform: translateY(0); }
 }
 
+/* Добавляем свечение вокруг квадрата */
+.intro-square::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  border-radius: 20px;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  z-index: -1;
+  animation: glowPulse 3s infinite;
+}
+
+@keyframes glowPulse {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+  100% { opacity: 0.5; transform: scale(0.9); }
+}
+
 #intro-screen p {
-  font-size: 1.2rem;
-  margin: 20px 0;
-  color: #aaa;
+  font-size: 1.4rem;
+  margin: 25px 0;
+  color: #ccddff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  line-height: 1.5;
 }
 
 .record {
-  font-size: 1.3rem;
-  color: #ffcc00;
-  margin-top: 30px;
+  font-size: 1.5rem;
+  color: #ffdd44;
+  margin-top: 35px;
+  text-shadow: 0 0 10px rgba(255, 221, 68, 0.7);
+  display: inline-block;
+  padding: 10px 25px;
+  border-radius: 15px;
+  background: rgba(50, 50, 100, 0.3);
+  border: 1px solid rgba(255, 221, 68, 0.3);
 }
 
 #start-btn {
-  padding: 12px 30px;
-  font-size: 1.2rem;
-  background: linear-gradient(to right, #00b09b, #96c93d);
+  padding: 15px 40px;
+  font-size: 1.4rem;
+  background: linear-gradient(to right, #00d2ff, #3a7bd5);
   color: white;
   border: none;
   border-radius: 30px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
+  box-shadow: 0 5px 20px rgba(0, 210, 255, 0.4);
+  margin-top: 30px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Добавляем эффект свечения для кнопки */
+#start-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  z-index: 1;
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+#start-btn:hover::before {
+  opacity: 1;
+  animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+  0% { left: -50%; opacity: 0; }
+  50% { opacity: 0.3; }
+  100% { left: 150%; opacity: 0; }
 }
 
 #start-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05) translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 210, 255, 0.6);
+  background: linear-gradient(to right, #00b9ff, #2f6fd9);
+}
+
+#start-btn:active {
+  transform: scale(0.98) translateY(2px);
+  box-shadow: 0 3px 10px rgba(0, 210, 255, 0.4);
 }
 
 /* Стили для игрового экрана */
@@ -361,4 +455,255 @@ body {
 
 #square {
   animation: pulseSquare 1.5s infinite;
+}
+
+/* Новый стиль для Game Over overlay */
+#gameover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  border-radius: 10px;
+}
+
+#gameover-overlay.show {
+  opacity: 1;
+  animation: fadeInOverlay 0.5s ease;
+}
+
+@keyframes fadeInOverlay {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Адаптивность для вступительного экрана */
+@media (max-width: 600px) {
+  #intro-screen h1 {
+    font-size: 2.8rem;
+  }
+  
+  .intro-content {
+    padding: 30px;
+  }
+  
+  .intro-square {
+    width: 60px;
+    height: 60px;
+  }
+  
+  #start-btn {
+    padding: 12px 30px;
+    font-size: 1.2rem;
+  }
+  
+  #intro-screen p {
+    font-size: 1.1rem;
+  }
+}
+#results-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #1a1a3a, #0d0d20);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: all 0.8s ease;
+  overflow: hidden;
+}
+
+/* Добавляем анимированные частицы на фон */
+#results-screen::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.07) 3px, transparent 3px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
+  background-size: 60px 60px, 40px 40px;
+  background-position: 0 0, 30px 25px;
+  animation: particle-drift 25s linear infinite;
+  opacity: 0.5;
+}
+
+.results-content {
+  animation: fadeIn 1s ease;
+  max-width: 90%;
+  width: 500px;
+  background: rgba(16, 16, 48, 0.6);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(100, 100, 255, 0.2);
+}
+
+#results-title {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #ff6666;
+  text-shadow: 0 0 15px rgba(255, 102, 102, 0.7);
+  font-weight: 800;
+}
+
+#result-animation {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 30px;
+  position: relative;
+}
+
+.result-stats {
+  background: rgba(10, 10, 30, 0.5);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(100, 100, 255, 0.15);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.stat-label {
+  font-size: 1.2rem;
+  color: #aabbff;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+#final-score {
+  color: #44ddff;
+  text-shadow: 0 0 10px rgba(68, 221, 255, 0.6);
+}
+
+#results-best-score {
+  color: #ffcc00;
+  text-shadow: 0 0 10px rgba(255, 204, 0, 0.6);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.result-btn {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  background: rgba(80, 80, 120, 0.4);
+  color: #ffffff;
+  border: 1px solid rgba(100, 100, 255, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.result-btn:hover {
+  background: rgba(100, 100, 180, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.primary-btn {
+  background: linear-gradient(to right, #00b7ff, #2e6cd0);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 183, 255, 0.3);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(to right, #00a2ff, #265bb9);
+  box-shadow: 0 6px 16px rgba(0, 183, 255, 0.4);
+}
+
+.secondary-btn {
+  background: rgba(200, 60, 60, 0.2);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #ffaaaa;
+}
+
+.secondary-btn:hover {
+  background: rgba(220, 70, 70, 0.3);
+}
+
+#new-record-message {
+  margin: 20px 0;
+  padding: 15px;
+  background: linear-gradient(to right, rgba(255, 204, 0, 0.2), rgba(255, 170, 0, 0.2));
+  border-radius: 15px;
+  border: 2px solid rgba(255, 204, 0, 0.5);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: burstIn 1s ease-out, pulseglow 2s infinite;
+}
+
+.new-record-text {
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: #ffcc00;
+  text-shadow: 0 0 12px rgba(255, 204, 0, 0.8);
+  margin-bottom: 10px;
+}
+
+.trophy-icon {
+  font-size: 3.5rem;
+  animation: trophyBounce 2s infinite;
+}
+
+@keyframes pulseglow {
+  0% { box-shadow: 0 0 10px rgba(255, 204, 0, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(255, 204, 0, 0.7); }
+  100% { box-shadow: 0 0 10px rgba(255, 204, 0, 0.4); }
+}
+
+@keyframes trophyBounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes burstIn {
+  0% {
+    transform: scale(0.6) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
 }
