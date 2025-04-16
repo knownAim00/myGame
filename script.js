@@ -16,8 +16,14 @@ const introScreen = document.getElementById("intro-screen");
 const gameScreen = document.getElementById("game-screen");
 const startBtn = document.getElementById("start-btn");
 const startBestScore = document.getElementById("start-best-score");
-const resetRecordBtn = document.getElementById("reset-record");
 
+const resultsScreen = document.getElementById("results-screen");
+const finalScore = document.getElementById("final-score");
+const resultsBestScore = document.getElementById("results-best-score");
+const newRecordMessage = document.getElementById("new-record-message");
+const menuBtn = document.getElementById("menu-btn");
+const resultsPlayAgainBtn = document.getElementById("results-play-again-btn");
+const resultsResetRecordBtn = document.getElementById("results-reset-record-btn");
 
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 let score = 0;
@@ -33,9 +39,8 @@ let isShrinking = true;
 bestScoreValue.textContent = bestScore;
 startBestScore.textContent = bestScore;
 
-// Функция для проверки мобильного устройства
 function isMobileDevice() {
-  return window.innerWidth <= 768; // Стандартная граница для мобильных устройств
+  return window.innerWidth <= 768;
 }
 
 function moveSquare() {
@@ -58,7 +63,6 @@ function changeSquareSize() {
   squareSize = isShrinking
     ? 30 + Math.floor(Math.random() * 11)
     : 50 + Math.floor(Math.random() * 21);
-
   isShrinking = !isShrinking;
   square.classList.add("size-change");
   setTimeout(() => {
@@ -76,10 +80,8 @@ function playPopEffect() {
 
 square.addEventListener("click", (event) => {
   if (!gameStarted || !canClick) return;
-
   canClick = false;
   setTimeout(() => canClick = true, 200);
-
   event.stopPropagation();
   score++;
   scoreText.textContent = "Score: " + score;
@@ -92,71 +94,49 @@ const leftMessages = ["Try again!", "Keep going!", "Missed it!", "React faster!"
 const colors = ["#ff4444", "#ffaa00", "#00ddff", "#ff66cc"];
 
 function showMotivation(side) {
-  // Если это мобильное устройство, не показываем мотивационные сообщения
-  if (isMobileDevice()) {
-    return;
-  }
-  
+  if (isMobileDevice()) return;
   const msg = side === "right" ? msgRight : msgLeft;
   const messageList = side === "right" ? rightMessages : leftMessages;
-
   msg.textContent = messageList[Math.floor(Math.random() * messageList.length)];
   msg.style.color = colors[Math.floor(Math.random() * colors.length)];
-
   const gameRect = gameContainer.getBoundingClientRect();
   const margin = 20;
   const verticalRange = window.innerHeight - 100;
   const top = Math.max(margin, Math.random() * verticalRange);
   msg.style.top = `${top}px`;
-
   const sideOffset = side === "right"
     ? gameRect.right + margin
     : gameRect.left - msg.offsetWidth - margin;
-
   msg.style.left = side === "right" ? `${sideOffset}px` : "";
   msg.style.right = side === "left" ? `${window.innerWidth - sideOffset}px` : "";
-
   msg.classList.remove("show");
   void msg.offsetWidth;
   msg.classList.add("show");
-
   setTimeout(() => msg.classList.remove("show"), 1000);
 }
 
 gameContainer.addEventListener("click", () => {
   if (!gameStarted) return;
-
   misses++;
-  
-  // Воспроизводим звук промаха
   if (missSound) {
     missSound.currentTime = 0;
     missSound.play();
   }
-  
-  // Обновляем отображение сердечек
   if (misses <= heartIcons.length) {
     const heartToLose = heartIcons[misses - 1];
     heartToLose.classList.add("heart-animation");
-    
     setTimeout(() => {
       heartToLose.classList.remove("heart-animation");
       heartToLose.classList.add("heart-lost");
     }, 500);
   }
-
   gameContainer.classList.remove("shake");
   void gameContainer.offsetWidth;
   gameContainer.classList.add("shake");
   gameContainer.classList.add("crack");
   setTimeout(() => gameContainer.classList.remove("crack"), 500);
-
-  if (misses === 1) {
-    showMotivation("right");
-  } else if (misses === 2) {
-    showMotivation("left");
-  }
-
+  if (misses === 1) showMotivation("right");
+  else if (misses === 2) showMotivation("left");
   if (misses >= 3) {
     endGame(true);
     return;
@@ -165,7 +145,7 @@ gameContainer.addEventListener("click", () => {
 
 function startTimer() {
   setInterval(() => {
-    let intensity = Math.min(misses, 3); // 0–3
+    let intensity = Math.min(misses, 3);
     square.style.animationDuration = `${0.4 - intensity * 0.05}s`;
     square.classList.remove("shake");
     void square.offsetWidth;
@@ -173,11 +153,9 @@ function startTimer() {
     setTimeout(() => square.classList.remove("shake"), 500);
   }, 5000);
   sizeInterval = setInterval(changeSquareSize, 5000);
-
   timerInterval = setInterval(() => {
     timeLeft--;
     timerText.textContent = "Time: " + timeLeft;
-
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       endGame(false);
@@ -188,60 +166,41 @@ function startTimer() {
 function endGame(tooManyMisses) {
   clearInterval(timerInterval);
   clearInterval(sizeInterval);
-  
-  // Проверяем, установлен ли новый рекорд и проигрываем соответствующий звук
-  if (score > bestScore) {
-    winSound.play(); // Воспроизводим звук победы при новом рекорде
-  } else {
-    gameoverSound.play(); // Иначе стандартный звук окончания игры
-  }
-  
   square.style.display = "none";
   gameStarted = false;
-
-  const overlay = document.createElement("div");
-  overlay.id = "gameover-overlay";
-  overlay.className = "show";
-  overlay.innerHTML = `
-    <div style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">Game Over</div>
-    <div style="font-size: 20px; color: #ffcc00;">Score: ${score}</div>
-    ${score > bestScore ? '<div class="new-record">🎉 New Record! 🎉</div>' : ''}
-  `;
+  gameScreen.style.display = "none";
+  resultsScreen.style.display = "flex";
+  finalScore.textContent = score;
 
   if (score > bestScore) {
+    winSound.play();
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
     bestScoreValue.textContent = bestScore;
     startBestScore.textContent = bestScore;
+    resultsBestScore.textContent = bestScore;
+    newRecordMessage.style.display = "block";
+  } else {
+    gameoverSound.play();
+    resultsBestScore.textContent = bestScore;
+    newRecordMessage.style.display = "none";
   }
-
-  gameContainer.appendChild(overlay);
-  scoreText.textContent = `Score: ${score}`;
-  restartBtn.style.display = "inline-block";
 }
 
 function resetGame() {
   clearInterval(timerInterval);
   clearInterval(sizeInterval);
-
-  const existingOverlay = document.getElementById("gameover-overlay");
-  if (existingOverlay) existingOverlay.remove();
-
   score = 0;
   timeLeft = 30;
   misses = 0;
   squareSize = 50;
   isShrinking = true;
-
   scoreText.textContent = "Score: 0";
   timerText.textContent = "Time: 30";
-  
-  // Восстановление сердечек
   heartIcons.forEach(heart => {
     heart.classList.remove("heart-lost");
     heart.classList.remove("heart-animation");
   });
-  
   restartBtn.style.display = "none";
   square.style.removeProperty("display");
   square.style.width = "50px";
@@ -249,7 +208,6 @@ function resetGame() {
   msgRight.style.opacity = 0;
   msgLeft.style.opacity = 0;
   gameContainer.style.backgroundColor = "#333";
-
   moveSquare();
 }
 
@@ -270,14 +228,30 @@ restartBtn.addEventListener("click", () => {
   startTimer();
 });
 
-resetRecordBtn.addEventListener("click", () => {
+resultsPlayAgainBtn.addEventListener("click", () => {
+  resultsScreen.style.display = "none";
+  gameScreen.style.display = "block";
+  resetGame();
+  gameStarted = true;
+  startTimer();
+});
+
+menuBtn.addEventListener("click", () => {
+  resultsScreen.style.display = "none";
+  introScreen.style.display = "flex";
+  introScreen.style.opacity = 1;
+});
+
+resultsResetRecordBtn.addEventListener("click", () => {
   localStorage.removeItem("bestScore");
   bestScore = 0;
   bestScoreValue.textContent = "0";
   startBestScore.textContent = "0";
+  resultsBestScore.textContent = "0";
+  newRecordMessage.style.display = "none";
 });
-window.addEventListener('resize', () => {
-  
+
+window.addEventListener("resize", () => {
   if (isMobileDevice()) {
     msgRight.classList.remove("show");
     msgLeft.classList.remove("show");
